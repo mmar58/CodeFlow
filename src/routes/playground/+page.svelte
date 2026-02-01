@@ -7,6 +7,7 @@
     import NodeEditor from "$lib/components/NodeEditor.svelte";
     import Toolbar from "$lib/components/Toolbar.svelte";
     import CodePreview from "$lib/components/CodePreview.svelte";
+    import ContextMenu from "$lib/components/ContextMenu.svelte";
     import type {
         AppNode,
         AppEdge,
@@ -14,7 +15,7 @@
         OutputNodeData,
         FunctionNodeData,
     } from "$lib/types";
-    import { Terminal, Save, FolderOpen } from "@lucide/svelte";
+    import { Terminal, Save, Trash2, Copy } from "@lucide/svelte";
     import { browser } from "$app/environment";
 
     // Editor state
@@ -26,6 +27,18 @@
     let executionOutput = $state("");
     let isRunning = $state(false);
     let projectName = $state("My Script");
+
+    // Context menu state
+    let contextMenu = $state<{
+        x: number;
+        y: number;
+        items: Array<{
+            label: string;
+            icon?: any;
+            action: () => void;
+            variant?: "default" | "danger";
+        }>;
+    } | null>(null);
 
     // Load saved state on mount
     $effect(() => {
@@ -215,6 +228,75 @@
             );
         }
     }
+
+    // Handle right-click for context menu
+    function handleContextMenu(event: MouseEvent) {
+        event.preventDefault();
+        const target = event.target as HTMLElement;
+        const isEdge = target.closest(".svelte-flow__edge");
+        const isNode = target.closest(".svelte-flow__node");
+
+        if (isEdge) {
+            const edgeId = isEdge.getAttribute("data-id");
+            if (edgeId) {
+                contextMenu = {
+                    x: event.clientX,
+                    y: event.clientY,
+                    items: [
+                        {
+                            label: "Delete Connection",
+                            icon: Trash2,
+                            variant: "danger",
+                            action: () => {
+                                edges = edges.filter((e) => e.id !== edgeId);
+                            },
+                        },
+                    ],
+                };
+            }
+        } else if (isNode) {
+            const nodeId = isNode.getAttribute("data-id");
+            if (nodeId) {
+                contextMenu = {
+                    x: event.clientX,
+                    y: event.clientY,
+                    items: [
+                        {
+                            label: "Duplicate Node",
+                            icon: Copy,
+                            action: () => {
+                                const node = nodes.find((n) => n.id === nodeId);
+                                if (node) {
+                                    const newNode = {
+                                        ...JSON.parse(JSON.stringify(node)),
+                                        id: `${node.type}-${Date.now()}`,
+                                        position: {
+                                            x: node.position.x + 50,
+                                            y: node.position.y + 50,
+                                        },
+                                    };
+                                    nodes = [...nodes, newNode];
+                                }
+                            },
+                        },
+                        {
+                            label: "Delete Node",
+                            icon: Trash2,
+                            variant: "danger",
+                            action: () => {
+                                nodes = nodes.filter((n) => n.id !== nodeId);
+                                edges = edges.filter(
+                                    (e) =>
+                                        e.source !== nodeId &&
+                                        e.target !== nodeId,
+                                );
+                            },
+                        },
+                    ],
+                };
+            }
+        }
+    }
 </script>
 
 <svelte:head>
@@ -255,7 +337,7 @@
                 showAddNodes={true}
                 showReset={false}
             />
-            <div class="editor-container">
+            <div class="editor-container" oncontextmenu={handleContextMenu}>
                 <NodeEditor bind:nodes bind:edges />
             </div>
         </main>
@@ -303,6 +385,15 @@
         </aside>
     </div>
 </div>
+
+{#if contextMenu}
+    <ContextMenu
+        x={contextMenu.x}
+        y={contextMenu.y}
+        items={contextMenu.items}
+        onClose={() => (contextMenu = null)}
+    />
+{/if}
 
 <style>
     .playground-page {

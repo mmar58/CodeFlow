@@ -10,8 +10,9 @@
     import Toolbar from "$lib/components/Toolbar.svelte";
     import PuzzleInfo from "$lib/components/PuzzleInfo.svelte";
     import CodePreview from "$lib/components/CodePreview.svelte";
+    import ContextMenu from "$lib/components/ContextMenu.svelte";
     import type { AppNode, AppEdge } from "$lib/types";
-    import { ArrowLeft } from "@lucide/svelte";
+    import { ArrowLeft, Trash2 } from "@lucide/svelte";
 
     // Get puzzle from URL
     const puzzleId = $derived($page.params.id);
@@ -27,6 +28,18 @@
     let isComplete = $state(false);
     let isRunning = $state(false);
 
+    // Context menu state
+    let contextMenu = $state<{
+        x: number;
+        y: number;
+        items: Array<{
+            label: string;
+            icon?: any;
+            action: () => void;
+            variant?: "default" | "danger";
+        }>;
+    } | null>(null);
+
     // Initialize nodes when puzzle changes
     $effect(() => {
         if (puzzle) {
@@ -37,6 +50,35 @@
             generatedCode = "";
         }
     });
+
+    // Handle right-click on canvas
+    function handleContextMenu(event: MouseEvent) {
+        event.preventDefault();
+
+        // Check if clicking on an edge or canvas
+        const target = event.target as HTMLElement;
+        const isEdge = target.closest(".svelte-flow__edge");
+
+        if (isEdge) {
+            const edgeId = isEdge.getAttribute("data-id");
+            if (edgeId) {
+                contextMenu = {
+                    x: event.clientX,
+                    y: event.clientY,
+                    items: [
+                        {
+                            label: "Delete Connection",
+                            icon: Trash2,
+                            variant: "danger",
+                            action: () => {
+                                edges = edges.filter((e) => e.id !== edgeId);
+                            },
+                        },
+                    ],
+                };
+            }
+        }
+    }
 
     function handleRun() {
         if (!puzzle) return;
@@ -174,12 +216,21 @@
                     showAddNodes={false}
                     showReset={true}
                 />
-                <div class="editor-container">
+                <div class="editor-container" oncontextmenu={handleContextMenu}>
                     <NodeEditor bind:nodes bind:edges />
                 </div>
             </main>
         </div>
     </div>
+
+    {#if contextMenu}
+        <ContextMenu
+            x={contextMenu.x}
+            y={contextMenu.y}
+            items={contextMenu.items}
+            onClose={() => (contextMenu = null)}
+        />
+    {/if}
 {:else}
     <div class="not-found">
         <h1>Puzzle Not Found</h1>
