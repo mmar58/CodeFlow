@@ -239,6 +239,8 @@
         <Background variant="dots" gap={20} size={1} />
         <MiniMap
             position="bottom-right"
+            pannable={true}
+            zoomable={true}
             nodeColor={(node) => {
                 switch (node.type) {
                     case "input":
@@ -270,11 +272,12 @@
         background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
     }
 
-    /* Remove white borders from nodes */
+    /* Remove white borders/backgrounds from nodes more aggressively */
     :global(.svelte-flow__node) {
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
+        background: transparent !important;
     }
 
     :global(.svelte-flow__edge-path) {
