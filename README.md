@@ -1,42 +1,53 @@
-# sv
+# CodeFlow - Visual Coding Puzzle Game
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+[![Netlify Status](https://api.netlify.com/api/v1/badges/b3334234-2223-4444-8888-1234567890/deploy-status)](https://app.netlify.com/sites/codeflowpuzzle/deploys)
 
-## Creating a project
+A visual programming puzzle game where you connect nodes to solve coding challenges. Built with SvelteKit and Svelte Flow.
 
-If you're seeing this, you've probably already done this step. Congrats!
+[**Play Online**](https://codeflowpuzzle.netlify.app/)
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## Live Demo
 
-To recreate this project with the same configuration:
+<iframe src="https://codeflowpuzzle.netlify.app/" width="100%" height="600px" style="border:0; border-radius: 12px; overflow:hidden;" title="CodeFlow Demo"></iframe>
 
-```sh
-# recreate this project
-pnpm dlx sv create --template minimal --types ts --install pnpm visual-coding-puzzle
-```
+> *Note: If the interactive demo doesn't load above, click the "Play Online" link.*
 
-## Developing
+## Features
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+*   **🧩 Puzzle Mode**: Solve logic puzzles by connecting input, function, and output nodes.
+*   **🛠️ Playground**: Free-form environment to build and test your own node graphs.
+*   **⚡ Real-time Execution**: See the results of your visual code instantly.
+*   **🔌 Svelte Flow Integration**: Smooth, performant node-based UI.
+*   **💾 Auto-save**: Your progress in the playground is saved automatically.
+*   **📥 Export Code**: Download your visual graphs as executable JavaScript files.
 
-```sh
-npm run dev
+## Tech Stack
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+*   **Framework**: [SvelteKit](https://kit.svelte.dev/)
+*   **Visual Engine**: [Svelte Flow](https://svelteflow.dev/) (xyflow)
+*   **Styling**: Tailwind CSS, Lucide Icons
+*   **Deployment**: Static Adapter (Netlify)
 
-## Building
+## Local Development
 
-To create a production version of your app:
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/yourusername/codeflow.git
+    cd codeflow
+    ```
 
-```sh
-npm run build
-```
+2.  Install dependencies:
+    ```bash
+    pnpm install
+    ```
 
-You can preview the production build with `npm run preview`.
+3.  Start the development server:
+    ```bash
+    pnpm run dev
+    ```
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+4.  Open `http://localhost:5173` in your browser.
+
+## Extending the Game
+
+Want to create your own levels or add new node types? Check out our [Contribution Guide](CONTRIBUTING.md).
