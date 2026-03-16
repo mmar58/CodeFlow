@@ -120,7 +120,9 @@
     }
 
     // Validate connection before adding
-    function isValidConnection(connection: Connection): boolean {
+    function isValidConnection(connection: Connection | null): boolean {
+        if (!connection) return false;
+        
         // Prevent self-connections
         if (connection.source === connection.target) {
             return false;
@@ -150,12 +152,14 @@
             return;
         }
 
-        if (onConnect) {
+        if (onConnect && connection) {
             onConnect({
                 source: connection.source,
                 target: connection.target,
             });
         }
+
+        if (!connection) return;
 
         // Add the new edge with proper styling
         const newEdge: AppEdge = {
@@ -231,7 +235,7 @@
         connectionLineStyle="stroke: #6366f1; stroke-width: 3px; stroke-dasharray: 5 5;"
         connectionRadius={30}
         elevateEdgesOnSelect={true}
-        connectOnClick={false}
+        clickConnect={false}
         autoPanOnConnect={false}
         panOnDrag={true}
     >
