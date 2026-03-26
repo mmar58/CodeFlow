@@ -133,6 +133,8 @@
         );
         border-bottom: 1px solid rgba(99, 102, 241, 0.2);
         backdrop-filter: blur(10px);
+        position: relative;
+        z-index: 50;
     }
 
     .toolbar-group {
